@@ -192,6 +192,30 @@
         event.stopPropagation();
       });
 
+        element.on('click', function(event) {
+            if (!attr.dndShfiltSelected) return;
+
+            event = event.shiftKey;
+            scope.$apply(function() {
+                $parse(attr.dndShfiltSelected)(scope, {event: event});
+            });
+
+            // Prevent triggering dndSelected in parent elements.
+            event.stopPropagation();
+        });
+
+      element.on('contextmenu', function(event) {
+          if (!attr.dndRightSelected) return;
+
+          event = event.originalEvent || event;
+          scope.$apply(function() {
+              $parse(attr.dndRightSelected)(scope, {event: event});
+          });
+
+          // Prevent triggering dndSelected in parent elements.
+          event.stopPropagation();
+      });
+
       /**
        * Workaround to make element draggable in IE9
        */

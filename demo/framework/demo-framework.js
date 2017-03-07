@@ -1,4 +1,4 @@
-angular.module("demo", ["ngRoute", "dndLists"])
+angular.module("demo", ["ngRoute", "dndLists","ui.bootstrap.contextMenu"])
     .config(function($routeProvider) {
         $routeProvider
             .when('/simple', {

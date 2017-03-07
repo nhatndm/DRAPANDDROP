@@ -26,5 +26,10 @@
     "*.json",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "angular-bootstrap-contextmenu": "^0.9.9",
+    "angular-right-click": "^0.1.1",
+    "bootstrap-contextmenu": "^0.3.4"
+  }
 }
