@@ -30,6 +30,7 @@
   "dependencies": {
     "angular-bootstrap-contextmenu": "^0.9.9",
     "angular-right-click": "^0.1.1",
-    "bootstrap-contextmenu": "^0.3.4"
+    "bootstrap-contextmenu": "^0.3.4",
+    "lodash": "^4.17.4"
   }
 }

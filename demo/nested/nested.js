@@ -7,21 +7,21 @@ angular.module("demo")
         let list = [];
         let index;
         let value;
-        let itemCopied;
         let listSelectItems = [];
         let saveDB = [];
-        $scope.setItemWithKey = (item,$event) => {
+        $scope.setItemWithKey = (itemFromUI,$event) => {
             "use strict";
             let countExist = 1;
             if($event.shiftKey){
-                    angular.forEach(listSelectItems,function(value,index){
-                        if(value.id === item.id && value.type === item.type){
+                    _.each(listSelectItems,function(value,index){
+                        if(value.$$hashKey === itemFromUI.$$hashKey){
                             countExist = 0;
-                            listSelectItems.splice(index,1);
+                            listSelectItems[index] = null;
                         }
                     });
+                    listSelectItems = _.compact(listSelectItems);
                     if(countExist == 1){
-                        listSelectItems.push(item);
+                        listSelectItems.push(itemFromUI);
                     }
             }
             if(!$event.shiftKey){
@@ -29,20 +29,37 @@ angular.module("demo")
             }
         };
 
-        $scope.setValue = (listFromUI,indexFromUI,valueFromUI) => {
-            "use strict";
-            list = listFromUI;
-            index = indexFromUI;
-            value = valueFromUI;
-        };
         let copyHtml = '<div class="text-info" style="cursor: pointer;margin-left: 5px;">' +
             '<h4><i class="fa fa-files-o" aria-hidden="true"></i> Copy</h4></div>';
         let copyItem = {
             html: copyHtml,
             enabled: function() {return true},
             click: function () {
-                saveDB = angular.copy(listSelectItems)
+                let isCurrentItem = false;
+                _.each(listSelectItems,function(item){
+                    "use strict";
+                    if(item.$$hashKey == value.$$hashKey){
+                        isCurrentItem = true;
+                    }
+                });
+                if(isCurrentItem){
+                    saveDB = angular.copy(listSelectItems);
+                    listSelectItems = [];
+                }
+                if(!isCurrentItem){
+                    listSelectItems = [];
+                    listSelectItems.push(value);
+                    saveDB = angular.copy(listSelectItems);
+                    listSelectItems = []
+                }
             }
+        };
+        let pasteDisableHtml = '<div style="cursor: no-drop;margin-left: 5px;color: #777777">' +
+            '<h4><i class="fa fa fa-clipboard" aria-hidden="true"></i> Paste</h4></div>';
+        let pasteDisableItem = {
+            html: pasteDisableHtml,
+            enabled: function() {return true},
+            click: function() { return false}
         };
         let pasteHtml = '<div class="text-success" style="cursor: pointer;margin-left: 5px;">' +
             '<h4><i class="fa fa fa-clipboard" aria-hidden="true"></i> Paste</h4></div>';
@@ -52,7 +69,7 @@ angular.module("demo")
             click: function () {
                 if(saveDB.length > 0){
                     if (value.type === "container") {
-                        angular.forEach(saveDB,function(valueArr){
+                        _.each(saveDB,function(valueArr){
                             "use strict";
                             value.children[0].children.push(valueArr);
                         });
@@ -70,12 +87,26 @@ angular.module("demo")
             click: function () {
                 list.splice(index,1);
             }};
-        $scope.menuOptions = [
-            copyItem,
-            pasteItem,
-            null,
-            deleteItem,
-        ];
+        $scope.menuOptions = function(listFromUI,indexFromUI,valueFromUI){
+            list = listFromUI;
+            index = indexFromUI;
+            value = valueFromUI;
+            if(saveDB.length > 0) {
+                return [
+                    copyItem,
+                    pasteItem,
+                    null,
+                    deleteItem,
+                ]
+            }else{
+                return [
+                    copyItem,
+                    pasteDisableItem,
+                    null,
+                    deleteItem,
+                ]
+            }
+        };
     $scope.models = {
         selected: null,
         templates: [
